@@ -18,3 +18,13 @@
        (for/sum ([i (in-range n)])
          (for/sum ([j (in-range i n)])
            (sqr (- (vector-ref X i) (vector-ref X j))))))))
+
+(define (variance-reduction original a-split b-split)
+  (- (var original) (+ (var a-split) (var b-split))))
+
+(module+ test
+  (define-binary-check (check-in-tolerance actual expected)
+    (< (abs (- actual expected)) 0.001))
+  (test-case "Variance"
+    ;; inexact result computed with numpy.array([10, 10, 50]).var()
+    (check-in-tolerance (var '#(10 10 50)) 355.555)))
