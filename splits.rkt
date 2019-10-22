@@ -3,7 +3,8 @@
 ;; Predicates & decisions, i.e. how and when to split a branch out
 (provide decision-max)
 
-(require (only-in racket/list empty? argmax))
+(require (only-in racket/list empty? argmax)
+         (only-in racket/bool false?))
 
 (require "vectors.rkt")
 
@@ -13,7 +14,7 @@
 (define (predicate-max feature labels)
   (define reduction-predicate-pairs
     (for/list ([value feature])
-      (let ([predicate (lambda (x) (<= x value))])
+      (let ([predicate (lambda (x) (less-than x value))])
         (cons (var-reduction labels feature predicate) predicate))))
   (argmax car reduction-predicate-pairs))
 
@@ -61,3 +62,28 @@
             (check-true (decision b_row))
             (check-false (decision c_row))
             (check-false (decision d_row))))))))
+
+;; less-than: a generalized <= operation which can work with binary vectors, as
+;;   used for one-hot encoding, as well as with normal real numbers.
+(define (less-than x value)
+  (cond [(and (real? x) (real? value)) (<= x value)]
+        [(and (binary-vector? x) (binary-vector? value))
+         (let ([pos-x (first-non-false-index x)]
+               [pos-v (first-non-false-index value)])
+           (<= pos-x pos-v))]))
+
+(define (binary-vector? v)
+  (and (vector? v)
+       (for/and ([e v]) (boolean? e))))
+
+(define (first-non-false-index v)
+  (vector-ref (vector-index-where v (lambda (e) (not (false? e)))) 0))
+
+(module+ test
+  (test-case "Less than"
+    (let ([v '#(#f #f #t)]
+          [w '#(#f #t #f)]
+          [x '#(#t #f #f)])
+      (check-true (less-than w v))
+      (check-true (less-than x w))
+      (check-true (less-than x v)))))

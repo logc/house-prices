@@ -1,6 +1,7 @@
 #lang racket/base
 
-(provide var-reduction)
+(provide var-reduction
+         vector-index-where)
 
 (require (only-in math sqr))
 

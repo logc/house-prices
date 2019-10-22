@@ -1,5 +1,9 @@
 #lang racket/base
 
+(provide train-tree
+         predict
+         prediction->regression)
+
 (require (only-in math sqr)
          (only-in racket/vector vector-filter))
 
@@ -81,8 +85,10 @@
           (check-equal? (predict c-tree 1) '(1 2))
           (check-equal? (predict c-tree 31) '(7 8)))))))
 
-(define (train-tree a-table [depth 0] [minimum-rows 2])
-  (cond [(<= (table-num-rows a-table) minimum-rows) (leaf (table->vecvec a-table))]
+(define (train-tree a-table [depth 0] [minimum-rows 2] [maximum-depth 100])
+  (cond [(or (<= (table-num-rows a-table) minimum-rows)
+             (>= depth maximum-depth))
+         (leaf (table->vecvec a-table))]
         [else
          (let ([features (get-features a-table)]
                [labels   (get-labels   a-table)])
@@ -91,8 +97,8 @@
                (let ([rows-true (vector-filter decision (get-rows a-table))]
                      [rows-false (vector-filter (lambda (row) (not (decision row))) (get-rows a-table))])
                  (tree decision
-                       (train-tree (vecvec->table rows-true) (add1 depth))
-                       (train-tree (vecvec->table rows-false) (add1 depth)))))))]))
+                       (train-tree (vecvec->table rows-true) (add1 depth) minimum-rows maximum-depth)
+                       (train-tree (vecvec->table rows-false) (add1 depth) minimum-rows maximum-depth))))))]))
 
 (module+ test
   (test-case "Train a tree"
