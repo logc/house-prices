@@ -6,6 +6,6 @@
          "decision.rkt")
 
 (module+ main
-  (define S  (io:parse-file "data/train.medium.csv"))
+  (define S  (io:parse-file "data/train.csv"))
   (define T  (tb:vecvec->table S))
   (define DT (dt:train-tree T 0 100)))
