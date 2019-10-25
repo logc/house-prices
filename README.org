@@ -10,8 +10,8 @@
   
  Now, that is the grand overview, but the first step I intended to take was just
  to see how easy it is to implement any well-known ML algorithm in Racket. I
- picked decision trees because they are simple to understand and the are the
- basis for Random Forests, a classifier with a very decent accuracy in most
+ picked decision trees because they are simple to understand and are the basis
+ for Random Forests, a classifier with a very decent accuracy in most
  situations.
 
  This repository contains, for now, a variation on decision trees, regression
