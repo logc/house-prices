@@ -1,0 +1,71 @@
+#+TITLE: Predict house prices with regression trees in Racket
+#+AUTHOR: Luis Osa
+
+* Motivation
+  This is an example project on how to create regression trees with plain
+  Racket. I think Racket, and Lisps in general, should be a good fit for machine
+  learning tasks because in the end training of a model happens by local,
+  discrete differentiation. Using a language capable of symbolic differentiation
+  could allow us to have more explainable models, instead of a set of weights
+  initialized at random and adjusted to a loss function.
+  
+Now, that is the grand overview, but the first step I intended to take was just
+to see how easy it is to implement any well-known ML algorithm in Racket. I
+picked decision trees because they are simple to understand and the are the
+basis for Random Forests, a classifier with a very decent accuracy in most
+situations.
+
+This repository contains, for now, a variation on decision trees, regression
+trees, because the first toy example that I was working on comes from Kaggle,
+and it is about predicting not a label but a continuous value, the price of a
+house listing.
+
+* Code layout
+  
+This is how the modules in this package work with each other in order to train a
+model:
+
+```
+main.rkt -> io.rkt : please read `data/train.csv`
+         <- io.rkt : ok, here it is as a vector of vectors, with categorical
+                     columns encoded as bit vectors
+                     
+main.rkt -> tables.rkt : please put this vector of vectors into a table where
+                         columns are easily accesible
+         <- tables.rkt : ok, here it is
+         
+main.rkt -> decision.rkt: please train a regression tree on this table
+
+            decision -> splits.rkt : please tell me which feature reduces
+                                     variance the most among the remaining
+                                     samples
+                     <- splits.rkt : use this feature with this existing value
+                                     to create the current decision step
+                                     
+         <- decision.rkt: here it is as a recursive structure where every branch
+                          holds a "decision", ie. a lambda function that accepts
+                          a sample and returns a boolean, and a left and right
+                          subtree.
+main.rkt (oooh, I would use that to predict new prices *if only I got that tree*
+```
+* Problems found
+** Performance
+   The modules can train a reasonable-looking tree for test examples, which are
+   (6 rows x 3 columns). It can also train a tree on a sub-sample of the total
+   problem, (500 rows x 81 columns), in around 3 secs (on a laptop with 2,7 GHz
+   Intel Core i7 and 16 GB memory). But it just takes forever to try to train on
+   the full problem, which is still of a toy size (1461 rows x 81 columns).
+   Forever here means longer than 10 minutes.
+
+* Solutions
+** Attempted
+From the beginning I was aware that using lists and untyped variables to hold
+numerical data would not perform well, so I tried to use vectors and declare
+floats wherever possible.
+
+I also tried switching to Typed Racket after finding that there were still
+performance problems, but I could not get it to work in the time I had
+available.
+** Not yet attempted
+- try `math/array` instead of my own `table` data structure
+- cache results of `variance-reduction` procedure calls
