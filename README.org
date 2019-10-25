@@ -25,7 +25,7 @@ house listing.
 This is how the modules in this package work with each other in order to train a
 model:
 
-```
+#+begin_src
 main.rkt -> io.rkt : please read `data/train.csv`
          <- io.rkt : ok, here it is as a vector of vectors, with categorical
                      columns encoded as bit vectors
@@ -47,7 +47,8 @@ main.rkt -> decision.rkt: please train a regression tree on this table
                           a sample and returns a boolean, and a left and right
                           subtree.
 main.rkt (oooh, I would use that to predict new prices *if only I got that tree*
-```
+#+end_src
+
 * Problems found
 ** Performance
    The modules can train a reasonable-looking tree for test examples, which are
