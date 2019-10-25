@@ -46,7 +46,7 @@ main.rkt -> decision.rkt: please train a regression tree on this table
                           holds a "decision", ie. a lambda function that accepts
                           a sample and returns a boolean, and a left and right
                           subtree.
-main.rkt (oooh, I would use that to predict new prices *if only I got that tree*
+main.rkt (oooh, I would use that tree to predict new prices *if only I got that tree*)
 #+end_src
 
 * Problems found
@@ -60,13 +60,13 @@ main.rkt (oooh, I would use that to predict new prices *if only I got that tree*
 
 * Solutions
 ** Attempted
-From the beginning I was aware that using lists and untyped variables to hold
+From the beginning I was aware that using lists and un-typed variables to hold
 numerical data would not perform well, so I tried to use vectors and declare
 floats wherever possible.
 
 I also tried switching to Typed Racket after finding that there were still
 performance problems, but I could not get it to work in the time I had
-available.
+available. That work is now in a branch called =typed=.
 ** Not yet attempted
-- try `math/array` instead of my own `table` data structure
-- cache results of `variance-reduction` procedure calls
+- use =math/array= instead of my own =table= data structure
+- cache results of =variance-reduction= procedure calls
